@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "plant-app",
+    "slug": "plant-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icons/new_icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/icons/new_icon2.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#fabcff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/new_icon2.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
