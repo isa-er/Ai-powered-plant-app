@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert, Image, FlatList } from "react-native";
-import { collection, query, where, onSnapshot, doc,getDocs} from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc,getDocs,orderBy} from "firebase/firestore";
 import { db } from "../../../firebase";
 import { getAuth } from "firebase/auth";
 import Loading from "../../components/Loading";
@@ -36,17 +36,18 @@ const Profile = () => {
 
   useEffect(() => {
     let unsubscribe; // Dinleyiciyi sonlandırmak için referans
-
+  
     const subscribeToPredictions = async () => {
       try {
         // Kullanıcı ID'sini email'e göre bul
         const userId = await getUserIdByEmail(userEmail);
-
-        // predictions alt koleksiyonuna eriş
+  
+        // predictions alt koleksiyonuna eriş ve sıralama ekle
         const predictionsRef = collection(db, "users", userId, "predictions");
-
+        const q = query(predictionsRef, orderBy("timestamp", "desc")); // Zamana göre sıralama (sondan başa)
+  
         // Firestore realtime listener
-        unsubscribe = onSnapshot(predictionsRef, (snapshot) => {
+        unsubscribe = onSnapshot(q, (snapshot) => {
           const updatedPredictions = [];
           snapshot.forEach((doc) => {
             updatedPredictions.push({ id: doc.id, ...doc.data() });
@@ -58,9 +59,9 @@ const Profile = () => {
         Alert.alert("Error", "Failed to fetch predictions.");
       }
     };
-
+  
     subscribeToPredictions();
-
+  
     // Cleanup: Dinleyiciyi kaldır
     return () => {
       if (unsubscribe) {
@@ -68,16 +69,17 @@ const Profile = () => {
       }
     };
   }, [userEmail]);
+  
 
   const renderPrediction = ({ item }) => (
     <View style={styles.card}>
       <Image source={{ uri: item.imageUrl }} style={styles.image} />
-      <Text style={styles.resultText}>Class: {item.result}</Text>
+      <Text style={styles.resultText}>Sınıfı: {item.result}</Text>
       <Text style={styles.resultText}>
-        Confidence: {item.confidence.toFixed(2)}
+        Güvenilirlik: {item.confidence.toFixed(2)}
       </Text>
       <Text style={styles.timestamp}>
-        Date: {new Date(item.timestamp?.seconds * 1000).toLocaleString()}
+        Gün: {new Date(item.timestamp?.seconds * 1000).toLocaleString()}
       </Text>
     </View>
   );
