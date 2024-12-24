@@ -16,6 +16,7 @@ import { auth } from "../../../firebase";
 import LottieView from "lottie-react-native";
 import Loading from "../../components/Loading";
 
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +26,7 @@ const LoginScreen = ({ navigation }) => {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      console.log("Successfully logged in!");
+      //console.log("Successfully logged inn!");
     } catch (error) {
       console.error("Login error:", error.message);
     } finally {

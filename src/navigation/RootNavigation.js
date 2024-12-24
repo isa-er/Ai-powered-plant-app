@@ -12,15 +12,22 @@ const RootNavigation = () => {
   const [loading, setLoading] = useState(true); // Auto-login için yükleme durumu
 
   useEffect(() => {
-    // Kullanıcı oturum durumu dinleniyor
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser); // Mevcut kullanıcıyı state'e kaydet
-      setLoading(false); // Yükleme tamamlandı
+      //console.log("Auth State Changed:", currentUser?.email || "No user logged in");
+      setUser(currentUser || null);
+        if (currentUser) {
+      setLoading(false);
+    }
     });
 
     return unsubscribe; // Dinleyiciyi temizle
   }, []);
 
+  // useEffect(() => {
+  //   console.log("User state updated:", user);
+  // }, [user]);
+  
+  
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -29,11 +36,30 @@ const RootNavigation = () => {
     );
   }
 
-  return (
-    <NavigationContainer>
-      {user ? <UserStack /> : <AuthStack />}
-    </NavigationContainer>
-  );
+   return (
+     <NavigationContainer>
+       {user ? <UserStack /> : <AuthStack />}
+     </NavigationContainer>
+   );
+
+  // return (
+  //   <NavigationContainer>
+  //     {user ? (
+  //       <>
+  //         {console.log("Rendering UserStack")}
+  //         <UserStack />
+  //       </>
+  //     ) : (
+  //       <>
+  //         {console.log("Rendering AuthStack")}
+  //         <AuthStack />
+  //       </>
+  //     )}
+  //   </NavigationContainer>
+  // );
+  
+
+
 };
 
 export default RootNavigation;

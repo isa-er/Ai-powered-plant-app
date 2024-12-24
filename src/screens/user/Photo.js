@@ -8,7 +8,7 @@ import { getAuth } from "firebase/auth";
 import Icon from "react-native-vector-icons/FontAwesome";
 import TahminEdiliyor from "../../components/TahminEdiliyor";
 
-const Photo = () => {
+const Photo = ({navigation}) => {
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
@@ -18,7 +18,7 @@ const Photo = () => {
   }
 
   const userEmail = currentUser.email; // Oturum açmış kullanıcının e-posta adresi
-  console.log("User Email from Firebase Auth:", userEmail);
+  //console.log("User Email from Firebase Auth:", userEmail);
 
   const [image, setImage] = useState(null);
   const [result, setResult] = useState(null);
@@ -101,8 +101,8 @@ const Photo = () => {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== "granted") {
         Alert.alert(
-          "Permission Denied",
-          "We need access to your camera to take a photo."
+          "İzin reddedildi",
+          "Fotoğraf çekmek için kamera iznine ihtiyacımız var!"
         );
         return;
       }
@@ -132,7 +132,7 @@ const Photo = () => {
     setLoading(true)
 
     if (!image) {
-      Alert.alert("No Image", "Please select or capture an image first.");
+      Alert.alert("Resim Yok", "Resim yükleyin veya çekin");
       return;
     }
 
@@ -171,11 +171,26 @@ const Photo = () => {
       const predictionResult = await apiResponse.json();
       setResult(predictionResult);
 
+
+      if (predictionResult.entropy > 0.5) {
+        Alert.alert(
+          "Hatalı Resim",
+          `Lütfen geçerli bir resim yükleyin.\n\nEntropi: ${predictionResult.entropy.toFixed(2)}
+          `
+        );
+        setLoading(false);
+        setImage(false)
+        
+        return;
+      }
+
       // Tahmin sonuçlarını veritabanına kaydet
       await savePredictionToFirestore(userEmail, imageUrl, predictionResult);
       setLoading(false)
       
-      Alert.alert("Success", "Prediction completed!");
+      Alert.alert("Başarılı", "Tahmin işlemi tamamlandı!");
+      navigation.navigate("Tahmin")
+
       
     } catch (error) {
       console.error("Error during upload or predict:", error);
@@ -263,12 +278,17 @@ const Photo = () => {
         </>
       )}
 
-      {result && (
-        <View style={styles.resultCard}>
-          <Text style={styles.resultText}>Sınıf: {result.predicted_class_name }</Text>
-          <Text style={styles.resultText}>Güvenilirlik: {result.confidence.toFixed(2)}</Text>
-        </View>
-      )}
+{result && result.entropy <= 0.5 && (
+  <View style={styles.resultCard}>
+    <Text style={styles.resultText}>
+      Sınıf: {result.predicted_class_name}
+    </Text>
+    <Text style={styles.resultText}>
+      Güvenilirlik: {result.confidence ? result.confidence.toFixed(2) : "HATA"}
+    </Text>
+  </View>
+)}
+
       
     </View>
   );
@@ -285,7 +305,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center", // tahmindeki butonları ayarlıyordun
     backgroundColor: "#5FC9C4",
     width: "80%",
     paddingVertical: 15,

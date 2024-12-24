@@ -15,17 +15,103 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../../firebase"; // Firebase bağlantısı
 import Icon from "react-native-vector-icons/FontAwesome";
-import LottieView from "lottie-react-native";
 import { Image } from "react-native-elements";
+import { Picker } from "@react-native-picker/picker"; // Dropdown için picker
 
 const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [name, setName] = useState("");
+  const [selectedCity, setSelectedCity] = useState(""); // Şehir seçimi
+
+  const cities = [
+    { label: "Adana", value: "Adana" },
+    { label: "Adıyaman", value: "Adiyaman" },
+    { label: "Afyonkarahisar", value: "Afyonkarahisar" },
+    { label: "Ağrı", value: "Agri" },
+    { label: "Aksaray", value: "Aksaray" },
+    { label: "Amasya", value: "Amasya" },
+    { label: "Ankara", value: "Ankara" },
+    { label: "Antalya", value: "Antalya" },
+    { label: "Ardahan", value: "Ardahan" },
+    { label: "Artvin", value: "Artvin" },
+    { label: "Aydın", value: "Aydin" },
+    { label: "Balıkesir", value: "Balikesir" },
+    { label: "Bartın", value: "Bartin" },
+    { label: "Batman", value: "Batman" },
+    { label: "Bayburt", value: "Bayburt" },
+    { label: "Bilecik", value: "Bilecik" },
+    { label: "Bingöl", value: "Bingol" },
+    { label: "Bitlis", value: "Bitlis" },
+    { label: "Bolu", value: "Bolu" },
+    { label: "Burdur", value: "Burdur" },
+    { label: "Bursa", value: "Bursa" },
+    { label: "Çanakkale", value: "Canakkale" },
+    { label: "Çankırı", value: "Cankiri" },
+    { label: "Çorum", value: "Corum" },
+    { label: "Denizli", value: "Denizli" },
+    { label: "Diyarbakır", value: "Diyarbakir" },
+    { label: "Düzce", value: "Duzce" },
+    { label: "Edirne", value: "Edirne" },
+    { label: "Elazığ", value: "Elazig" },
+    { label: "Erzincan", value: "Erzincan" },
+    { label: "Erzurum", value: "Erzurum" },
+    { label: "Eskişehir", value: "Eskisehir" },
+    { label: "Gaziantep", value: "Gaziantep" },
+    { label: "Giresun", value: "Giresun" },
+    { label: "Gümüşhane", value: "Gumushane" },
+    { label: "Hakkari", value: "Hakkari" },
+    { label: "Hatay", value: "Hatay" },
+    { label: "Iğdır", value: "Igdir" },
+    { label: "Isparta", value: "Isparta" },
+    { label: "İstanbul", value: "Istanbul" },
+    { label: "İzmir", value: "Izmir" },
+    { label: "Kahramanmaraş", value: "Kahramanmaras" },
+    { label: "Karabük", value: "Karabuk" },
+    { label: "Karaman", value: "Karaman" },
+    { label: "Kars", value: "Kars" },
+    { label: "Kastamonu", value: "Kastamonu" },
+    { label: "Kayseri", value: "Kayseri" },
+    { label: "Kırıkkale", value: "Kirikkale" },
+    { label: "Kırklareli", value: "Kirklareli" },
+    { label: "Kırşehir", value: "Kirsehir" },
+    { label: "Kilis", value: "Kilis" },
+    { label: "Kocaeli", value: "Kocaeli" },
+    { label: "Konya", value: "Konya" },
+    { label: "Kütahya", value: "Kutahya" },
+    { label: "Malatya", value: "Malatya" },
+    { label: "Manisa", value: "Manisa" },
+    { label: "Mardin", value: "Mardin" },
+    { label: "Mersin", value: "Mersin" },
+    { label: "Muğla", value: "Mugla" },
+    { label: "Muş", value: "Mus" },
+    { label: "Nevşehir", value: "Nevsehir" },
+    { label: "Niğde", value: "Nigde" },
+    { label: "Ordu", value: "Ordu" },
+    { label: "Osmaniye", value: "Osmaniye" },
+    { label: "Rize", value: "Rize" },
+    { label: "Sakarya", value: "Sakarya" },
+    { label: "Samsun", value: "Samsun" },
+    { label: "Siirt", value: "Siirt" },
+    { label: "Sinop", value: "Sinop" },
+    { label: "Sivas", value: "Sivas" },
+    { label: "Şanlıurfa", value: "Sanliurfa" },
+    { label: "Şırnak", value: "Sirnak" },
+    { label: "Tekirdağ", value: "Tekirdag" },
+    { label: "Tokat", value: "Tokat" },
+    { label: "Trabzon", value: "Trabzon" },
+    { label: "Tunceli", value: "Tunceli" },
+    { label: "Uşak", value: "Usak" },
+    { label: "Van", value: "Van" },
+    { label: "Yalova", value: "Yalova" },
+    { label: "Yozgat", value: "Yozgat" },
+    { label: "Zonguldak", value: "Zonguldak" },
+  ];
+  
 
   const handleSignUp = async () => {
-    if (!email || !password || !password2 || !name) {
+    if (!email || !password || !password2 || !name || !selectedCity) {
       Alert.alert("Hata", "Lütfen tüm alanları doldurun.");
       return;
     }
@@ -48,11 +134,12 @@ const SignupScreen = ({ navigation }) => {
       await setDoc(doc(db, "users", userId), {
         email: email,
         name: name,
+        city: selectedCity, // Seçilen şehir kaydediliyor
         createdAt: new Date(),
       });
 
-      Alert.alert("Başarılı", "Kayıt başarılı! Giriş yapabilirsiniz.");
-      navigation.navigate("Login"); // Kayıttan sonra Login sayfasına yönlendirme
+      Alert.alert("Başarılı", "Kayıt başarılı!");
+      // navigation.navigate("Login"); // Kayıttan sonra Login sayfasına yönlendirme
     } catch (error) {
       Alert.alert("Hata", error.message);
     }
@@ -60,25 +147,17 @@ const SignupScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        style={{ flex: 1, marginTop:30}}
-        
-      >
+      <KeyboardAvoidingView style={{ flex: 1, marginTop: 30 }}>
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, }}
+          contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.container}>
             <Text style={styles.header}>Kayıt Ol</Text>
-
-            {/* <LottieView
-              source={require("../../../assets/icons/r.json")} // Lottie animasyon dosyası
-              autoPlay
-              loop
-              style={{ height: 150, width: 150 }}
-            /> */}
-
-            {<Image source={require('../../../assets/icons/leaf2.png')} style={{width:200, height:200}} />}
+            <Image
+              source={require("../../../assets/icons/leaf2.png")}
+              style={{ width: 200, height: 200 }}
+            />
 
             <View style={styles.inputContainer}>
               <Icon name="user" size={20} color="#888" style={styles.inputIcon} />
@@ -96,7 +175,7 @@ const SignupScreen = ({ navigation }) => {
                 style={styles.input}
                 placeholder="Email"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(text) => setEmail(text.toLocaleLowerCase())}
                 keyboardType="email-address"
               />
             </View>
@@ -121,6 +200,25 @@ const SignupScreen = ({ navigation }) => {
                 onChangeText={setPassword2}
                 secureTextEntry
               />
+            </View>
+
+            {/* Şehir Seçimi Dropdown */}
+            <View style={styles.dropdownContainer}>
+              <Text style={styles.dropdownLabel}>Şehir Seçin</Text>
+              <Picker
+                selectedValue={selectedCity}
+                onValueChange={(itemValue) => setSelectedCity(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="Şehir Seçin" value="" />
+                {cities.map((city) => (
+                  <Picker.Item
+                    key={city.value}
+                    label={city.label}
+                    value={city.value}
+                  />
+                ))}
+              </Picker>
             </View>
 
             <TouchableOpacity style={styles.button} onPress={handleSignUp}>
@@ -151,7 +249,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FBEAD7",
     padding: 20,
-    
   },
   header: {
     fontSize: 28,
@@ -176,6 +273,23 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
+  },
+  dropdownContainer: {
+    width: "90%",
+    marginBottom: 15,
+  },
+  dropdownLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  picker: {
+    backgroundColor: "#FFF",
+    borderWidth: 1,
+    borderColor: "#E5E5E5",
+    borderRadius: 8,
+    height: 50,
+    justifyContent: "center",
   },
   button: {
     width: "90%",
