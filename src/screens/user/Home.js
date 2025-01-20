@@ -299,7 +299,7 @@ const Home = ({ navigation }) => {
       if (!sehir) return; // Şehir bilgisi yoksa bekle
       try {
         const response = await fetch(
-          `https://api.weatherapi.com/v1/current.json?key=24c7403fd1124a0a8da183412242312&q=${sehir}&lang=tr`
+          `api key`
         );
         const data = await response.json();
         setWeather(data.current.temp_c);
