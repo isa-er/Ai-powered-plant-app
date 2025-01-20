@@ -161,12 +161,9 @@ const Photo = ({navigation}) => {
         type: "image/jpeg",
       });
 
-      // https://fastapi-backend-3-q9m9.onrender.com/predict/
-      // http://192.168.1.148:8000/predict/
-      //"https://fastapi-backend-3-q9m9.onrender.com/predict/"   geçerli olan - benim hesap
-      //"https://fastapi-backend-bc81.onrender.com/predict/",   ortak hesap
+     
       const apiResponse = await fetch(
-        "https://fastapi-backend-3-q9m9.onrender.com/predict/",
+        "/predict",
         {
           method: "POST",
           body: formData,
