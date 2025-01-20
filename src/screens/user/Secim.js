@@ -16,8 +16,8 @@ import { MaterialIcons, FontAwesome } from "react-native-vector-icons";
 import { doc, collection, setDoc} from "firebase/firestore";
 import { auth, db } from "../../../firebase";
 
-const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-const GEMINI_API_KEY = "AIzaSyCR9gWNdfwCfJLET5bHJCcqyQoVrzdm3gc";
+const GEMINI_ENDPOINT = "";
+const GEMINI_API_KEY = "";
 
 const Secim = ({ navigation, route }) => {
   
