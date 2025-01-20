@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Alert, StyleSheet, Text, TouchableOpacity, Image ,Modal,FlatList} from "react-native";
+import { View, Alert, StyleSheet, Text, TouchableOpacity, Image ,Modal,FlatList,ImageBackground} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
@@ -13,7 +13,7 @@ const Photo = ({navigation}) => {
   const currentUser = auth.currentUser;
 
   if (!currentUser) {
-    console.error("No user is logged in.");
+    //console.error("No user is logged in.");
     return <Text>Error: No user is logged in.</Text>;
   }
 
@@ -51,7 +51,13 @@ const Photo = ({navigation}) => {
     </View>
   );
 
+  const resetfunc=()=>{
+      setImage(null)
+      setResult(null)
+  }
 
+
+ 
 
 
   // Kullanıcı uyarısı
@@ -157,6 +163,8 @@ const Photo = ({navigation}) => {
 
       // https://fastapi-backend-3-q9m9.onrender.com/predict/
       // http://192.168.1.148:8000/predict/
+      //"https://fastapi-backend-3-q9m9.onrender.com/predict/"   geçerli olan - benim hesap
+      //"https://fastapi-backend-bc81.onrender.com/predict/",   ortak hesap
       const apiResponse = await fetch(
         "https://fastapi-backend-3-q9m9.onrender.com/predict/",
         {
@@ -172,7 +180,7 @@ const Photo = ({navigation}) => {
       setResult(predictionResult);
 
 
-      if (predictionResult.entropy > 0.5) {
+      if (predictionResult.entropy > 2.5) {
         Alert.alert(
           "Hatalı Resim",
           `Lütfen geçerli bir resim yükleyin.\n\nEntropi: ${predictionResult.entropy.toFixed(2)}
@@ -190,10 +198,10 @@ const Photo = ({navigation}) => {
       
       Alert.alert("Başarılı", "Tahmin işlemi tamamlandı!");
       navigation.navigate("Tahmin")
-
+      resetfunc()
       
     } catch (error) {
-      console.error("Error during upload or predict:", error);
+      //console.error("Error during upload or predict:", error);
       Alert.alert("Error", "An error occurred while processing the image.");
     }
   };
@@ -210,6 +218,7 @@ const Photo = ({navigation}) => {
 
       const userDocRef = querySnapshot.docs[0].ref;
       const predictionsRef = collection(userDocRef, "predictions");
+      
 
       await addDoc(predictionsRef, {
         imageUrl: imageUrl,
@@ -217,13 +226,19 @@ const Photo = ({navigation}) => {
         confidence: predictionResult.confidence,
         timestamp: new Date(),
       });
+
+      
+
+      
+
     } catch (error) {
-      console.error("Error saving prediction to Firestore:", error);
+      //console.error("Error saving prediction to Firestore:", error);
       Alert.alert("Error", "Failed to save prediction.");
     }
   };
 
   return (
+
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={pickImage}>
         <Icon name="upload" size={50} color="#FFF" style={styles.icon} />
@@ -278,24 +293,29 @@ const Photo = ({navigation}) => {
         </>
       )}
 
-{result && result.entropy <= 0.5 && (
-  <View style={styles.resultCard}>
-    <Text style={styles.resultText}>
-      Sınıf: {result.predicted_class_name}
-    </Text>
-    <Text style={styles.resultText}>
-      Güvenilirlik: {result.confidence ? result.confidence.toFixed(2) : "HATA"}
-    </Text>
-  </View>
-)}
+        {result && result.entropy <= 0.5 && (
+          <View style={styles.resultCard}>
+            <Text style={styles.resultText}>
+              Sınıf: {result.predicted_class_name}
+            </Text>
+            <Text style={styles.resultText}>
+              Güvenilirlik: {result.confidence ? result.confidence.toFixed(2) : "HATA"}
+            </Text>
+          </View>
+        )}
 
       
     </View>
+
+
   );
 };
 
 const styles = StyleSheet.create({
+
+
   container: {
+    
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

@@ -9,15 +9,21 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
+  ImageBackground
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../../firebase";
 import LottieView from "lottie-react-native";
 import Loading from "../../components/Loading";
 
 
+
 const LoginScreen = ({ navigation }) => {
+
+
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -26,11 +32,30 @@ const LoginScreen = ({ navigation }) => {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      //console.log("Successfully logged inn!");
+      // console.log("Successfully logged in!");
     } catch (error) {
-      console.error("Login error:", error.message);
+      //console.error("Login error:", error.message);
+      Alert.alert("Hata", "Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      Alert.alert("Uyarı", "Şifre sıfırlama için e-posta adresinizi giriniz.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert(
+        "Başarılı",
+        "Şifre sıfırlama talimatları e-posta adresinize gönderildi."
+      );
+    } catch (error) {
+      //console.error("Reset password error:", error.message);
+      Alert.alert("Hata", "Şifre sıfırlama işlemi başarısız oldu.");
     }
   };
 
@@ -39,11 +64,11 @@ const LoginScreen = ({ navigation }) => {
   }
 
   return (
+
+  
+
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        style={{ flex: 1,marginTop:30 }}
-       
-      >
+      <KeyboardAvoidingView style={{ flex: 1, marginTop: 30 }}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
@@ -91,19 +116,35 @@ const LoginScreen = ({ navigation }) => {
             >
               <Text style={styles.buttonText}>Kayıt Ol</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.forgotPassword}
+              onPress={handleForgotPassword}
+            >
+              <Text style={styles.forgotPasswordText}>Şifrenizi mi unuttunuz?</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+
+
+  
   );
 };
 
 const styles = StyleSheet.create({
+
+  background:{
+    flex:1
+  },
   safeArea: {
+    
     flex: 1,
     backgroundColor: "#E0F5F7",
   },
   container: {
+    
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -156,6 +197,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 8,
     marginTop: 10,
+  },
+  forgotPassword: {
+    marginTop: 15,
+  },
+  forgotPasswordText: {
+    color: "#A47EDE",
+    fontSize: 14,
+    fontWeight: "bold",
   },
   buttonText: {
     color: "#FFF",

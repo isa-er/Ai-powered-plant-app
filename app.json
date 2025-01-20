@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "plant-app",
+    "name": "PlantCare",
     "slug": "plant-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icons/new_icon.png",
+    "icon": "./assets/icons/leaf.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/icons/new_icon2.png",
+      "image": "./assets/icons/leaf.png",
       "resizeMode": "contain",
       "backgroundColor": "#fabcff"
     },
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/new_icon2.png",
+        "foregroundImage": "./assets/icons/leaf.png",
         "backgroundColor": "#ffffff"
       }
     },
@@ -25,7 +25,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      "expo-font"
     ]
   }
 }

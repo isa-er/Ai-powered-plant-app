@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Button,
   View,
   Text,
   StyleSheet,
@@ -13,12 +14,13 @@ import { collection, query, where, onSnapshot, doc, getDocs, orderBy } from "fir
 import { db } from "../../../firebase";
 import { getAuth } from "firebase/auth";
 
-const Tahmin = ({ navigation }) => {
+const Tahmin = ({ navigation,route }) => {
+
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
   if (!currentUser) {
-    console.error("No user is logged in.");
+    //console.error("No user is logged in.");
     return <Text>Error: No user is logged in.</Text>;
   }
 
@@ -34,7 +36,7 @@ const Tahmin = ({ navigation }) => {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      console.error("No user found with the given email");
+      //console.error("No user found with the given email");
       return null; // Hata fırlatmak yerine null döndür
     }
 
@@ -65,7 +67,7 @@ const Tahmin = ({ navigation }) => {
           setPredictions(updatedPredictions);
         });
       } catch (error) {
-        console.error("Error fetching predictions:", error);
+        //console.error("Error fetching predictions:", error);
         Alert.alert("Hata", "Tahminler alınırken bir hata oluştu.");
         setPredictions([]); // Hata durumunda boş liste ayarla
       } finally {
@@ -106,6 +108,14 @@ const Tahmin = ({ navigation }) => {
       <TouchableOpacity style={styles.detailButton} onPress={() => openModal(item)}>
         <Text style={styles.detailButtonText}>Detay</Text>
       </TouchableOpacity>
+      <Text style={styles.dateText}>
+      Tahmin Günü:{" "}
+      
+      {new Date(item.timestamp?.seconds * 1000).toLocaleString()}
+
+      
+    </Text>
+      
     </View>
   );
 
@@ -117,8 +127,11 @@ const Tahmin = ({ navigation }) => {
     );
   }
 
+
+
   return (
     <View style={styles.container}>
+      
       <Text style={styles.text}>Tahminler</Text>
       {predictions.length > 0 ? (
         <FlatList
@@ -168,51 +181,80 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "white",
+    backgroundColor: "#FEFAE0", // Açık arka plan
   },
   text: {
-    fontSize: 20,
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#34495E", // Modern koyu gri ton
     marginBottom: 20,
     textAlign: "center",
   },
   card: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#ECDFCC", // Beyaz kutucuk
     padding: 15,
     marginVertical: 10,
-    borderRadius: 10,
-    borderWidth: 1,
+    borderRadius: 15,
+    shadowColor: "#000", // Hafif gölge
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5, // Android için gölge
     alignItems: "center",
+    borderColor: "#00425A", // Gri kenar çizgisi
+    borderWidth: 1,
   },
   image: {
-    width: 200,
-    height: 200,
+    width: 180,
+    height: 180,
     marginBottom: 10,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#E0E0E0", // Hafif kenar çerçevesi
   },
   resultText: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#186F65", // Koyu mavi-gri ton
     marginBottom: 5,
   },
+  dateText: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#7C444F", // Daha yumuşak gri ton
+    marginBottom: 10,
+    fontWeight:"800",
+    marginTop:10,
+  },
   detailButton: {
-    marginTop: 10,
-    backgroundColor: "#FF8C00",
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: "#3498DB", // Mavi ton
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    width:"40%",
+    alignItems:"center",
+    marginTop:"7"
+    
+    
   },
   detailButtonText: {
-    color: "#FFF",
+    alignItems:"center",
+    justifyContent:"center",
+    color: "#FFF", // Beyaz yazı
     fontWeight: "bold",
+    fontSize: 17,
   },
   modalContainer: {
+    
     flex: 1,
     marginTop: "40%",
     marginBottom: "40%",
-    borderRadius: 50,
+    borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgb(23, 175, 68)",
+    backgroundColor: "#FBF6E9", // Açık gri ton
     padding: 20,
+    
   },
   modalImage: {
     width: 150,
@@ -223,18 +265,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 20,
     fontWeight: "bold",
-    color: "black",
+    color: "#F87A53",
   },
   modalDetail: {
     fontSize: 18,
     fontWeight: "500",
-    color: "black",
+    color: "#898121",
     marginTop: 5,
   },
   treatmentButton: {
     marginTop: 20,
     width: "50%",
-    backgroundColor: "#5FC9C4",
+    backgroundColor: "#1ABC9C", // Canlı yeşil
     padding: 10,
     borderRadius: 10,
     alignItems: "center",
@@ -246,7 +288,7 @@ const styles = StyleSheet.create({
   closeButton: {
     marginTop: 10,
     width: "50%",
-    backgroundColor: "#FF5C5C",
+    backgroundColor: "#E74C3C", // Canlı kırmızı
     padding: 10,
     borderRadius: 10,
     alignItems: "center",
@@ -257,7 +299,7 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     fontSize: 16,
-    color: "#888",
+    color: "#7F8C8D",
     textAlign: "center",
   },
 });

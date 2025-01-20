@@ -8,12 +8,13 @@ const Loading = () => {
       
 
       <LottieView
-        source={require("../../assets/icons/r3.json")} // Lottie animasyon dosyası
+        source={require("../../assets/icons/r4.json")} // Lottie animasyon dosyası
         autoPlay
         loop
-        speed={5}
+        speed={1.5}
         style={{height:300,width:300}}
       />
+      <Text style={{fontSize:20 , fontWeight:"condensedBold",color:"green"}} >Lütfen bekleyiniz</Text>
     </View>
   )
 }

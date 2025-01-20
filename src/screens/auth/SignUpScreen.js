@@ -191,7 +191,7 @@ const SignupScreen = ({ navigation }) => {
               />
             </View>
 
-            <View style={styles.inputContainer}>
+            <View style={styles.inputContainerOzel}>
               <Icon name="lock" size={20} color="#888" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
@@ -267,6 +267,23 @@ const styles = StyleSheet.create({
     height: 50,
     marginBottom: 15,
   },
+
+  inputContainerOzel:{
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF",
+    borderWidth: 1,
+    borderColor: "#E5E5E5",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    width: "90%",
+    height: 50,
+    marginBottom: 15,
+
+  },
+
+
+
   inputIcon: {
     marginRight: 10,
   },

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+  Button,
   View,
   Text,
   StyleSheet,
@@ -13,8 +14,15 @@ import { collection, doc, deleteDoc, updateDoc ,onSnapshot,query,orderBy} from "
 import { auth, db } from "../../../firebase";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 
-const TedaviEkrani = () => {
+
+
+
+const TedaviEkrani = ({navigation,route}) => {
+  
+
+
   const [loading, setLoading] = useState(true);
   const [treatments, setTreatments] = useState([]);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -51,7 +59,7 @@ const TedaviEkrani = () => {
           setLoading(false);
         },
         (error) => {
-          console.error("Tedaviler yüklenirken hata oluştu:", error);
+          //console.error("Tedaviler yüklenirken hata oluştu:", error);
           alert("Tedaviler yüklenirken bir hata oluştu.");
         }
       );
@@ -83,7 +91,7 @@ const TedaviEkrani = () => {
         );
       })
       .catch((error) => {
-        console.error("Tarih kaydedilirken hata oluştu:", error);
+        //console.error("Tarih kaydedilirken hata oluştu:", error);
         alert("Tarih kaydedilirken bir hata oluştu.");
       });
   };
@@ -108,7 +116,7 @@ const TedaviEkrani = () => {
               await deleteDoc(treatmentRef);
               alert("Tedavi silindi.");
             } catch (error) {
-              console.error("Tedavi silinirken hata oluştu:", error);
+              //console.error("Tedavi silinirken hata oluştu:", error);
               alert("Tedavi silinirken bir hata oluştu.");
             }
           },
@@ -130,7 +138,7 @@ const TedaviEkrani = () => {
       setAddingNote(null);
       alert("Not kaydedildi.");
     } catch (error) {
-      console.error("Not kaydedilirken hata oluştu:", error);
+      //console.error("Not kaydedilirken hata oluştu:", error);
       alert("Not kaydedilirken bir hata oluştu.");
     }
   };
@@ -146,6 +154,8 @@ const TedaviEkrani = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+
+
       <Text style={styles.header}>Tedavi Ekranı</Text>
       {treatments.length > 0 ? (
         treatments.map((treatment) => (
@@ -168,6 +178,7 @@ const TedaviEkrani = () => {
                 Başlangıç Tarihi: {treatment.baslangicTarihi}
               </Text>
             )}
+            
             {treatment.bitisTarihi && (
               <Text style={styles.cardDetail}>
                 Bitiş Tarihi: {treatment.bitisTarihi}
@@ -199,13 +210,7 @@ const TedaviEkrani = () => {
             
 
             <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => deleteTreatment(treatment.id)}
-              >
-                <Icon name="trash-outline" size={18} color="#FFF" />
-                <Text style={styles.buttonText}>Sil</Text>
-              </TouchableOpacity>
+              
 
               <TouchableOpacity
                 style={styles.button}
@@ -216,7 +221,7 @@ const TedaviEkrani = () => {
                 }}
               >
                 <Icon name="calendar-outline" size={18} color="#FFF" />
-                <Text style={styles.buttonText}>Başlangıç Tarihi</Text>
+                <Text style={styles.buttonText}>Başlangıç Tarihi </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -231,8 +236,18 @@ const TedaviEkrani = () => {
                 <Text style={styles.buttonText}>Bitiş Tarihi</Text>
               </TouchableOpacity>
 
+
               <TouchableOpacity
-                style={styles.button}
+                style={styles.button2}
+                onPress={() => deleteTreatment(treatment.id)}
+              >
+                <Icon name="trash-outline" size={18} color="#FFF" />
+                <Text style={styles.buttonText}>Tedaviyi Sil</Text>
+              </TouchableOpacity>
+
+
+              <TouchableOpacity
+                style={styles.button3}
                 onPress={() => setAddingNote(treatment.id)}
               >
                 <Icon name="create-outline" size={18} color="#FFF" />
@@ -273,9 +288,28 @@ const TedaviEkrani = () => {
 };
 
 const styles = StyleSheet.create({
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   container: {
     padding: 20,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: "#CBE2B5",
   },
   header: {
     fontSize: 24,
@@ -285,7 +319,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#E3F0AF",
     borderRadius: 10,
     padding: 15,
     marginBottom: 20,
@@ -296,19 +330,24 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#118B50",
     marginBottom: 10,
   },
   cardDetail: {
-    fontSize: 14,
-    color: "#555",
-    marginBottom: 5,
+    fontWeight: "700",
+    fontSize: 15,
+    color: "#674636",
+    marginBottom: 10, // Daha geniş boşluk
+    paddingBottom: 5,
+    borderBottomColor: "rgba(103, 70, 54, 0.2)", // Şık bir tonlama
+    borderBottomWidth: 2, // İnce çizgi
   },
   cardDate: {
-    fontSize: 12,
-    color: "#888",
+    fontWeight:"400",
+    fontSize: 14,
+    color: "#4F6F52",
     marginTop: 10,
     fontStyle: "italic",
   },
@@ -322,14 +361,39 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#118B50",
+    backgroundColor: "#47A992",
     padding: 10,
     borderRadius: 8,
     width: "48%", // Butonlar yan yana sığsın
     marginBottom: 10, // Alt boşluk
   },
+
+
+  button2: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#C51605",
+    padding: 10,
+    borderRadius: 8,
+    width: "48%", // Butonlar yan yana sığsın
+    marginBottom: 10, // Alt boşluk
+  },
+
+  button3: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#5F8D4E",
+    padding: 10,
+    borderRadius: 8,
+    width: "48%", // Butonlar yan yana sığsın
+    marginBottom: 10, // Alt boşluk
+  },
+
+
   buttonText: {
-    color: "#FFF",
+    color: "#F8FAE5",
     fontSize: 14,
     fontWeight: "bold",
     marginLeft: 5,
